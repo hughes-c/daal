@@ -34,10 +34,14 @@ using namespace daal::algorithms::neural_networks;
 using namespace daal::services;
 
 /* Input data set parameters */
-string trainDatasetFile     = "../data/batch/neural_network_train.csv";
-string trainGroundTruthFile = "../data/batch/neural_network_train_ground_truth.csv";
-string testDatasetFile      = "../data/batch/neural_network_test.csv";
-string testGroundTruthFile  = "../data/batch/neural_network_test_ground_truth.csv";
+// string trainDatasetFile     = "../data/batch/neural_network_train.csv";
+// string trainGroundTruthFile = "../data/batch/neural_network_train_ground_truth.csv";
+// string testDatasetFile      = "../data/batch/neural_network_test.csv";
+// string testGroundTruthFile  = "../data/batch/neural_network_test_ground_truth.csv";
+string trainDatasetFile     = "train_data.csv";
+string trainGroundTruthFile = "train_truth.csv";
+string testDatasetFile      = "test_data.csv";
+string testGroundTruthFile  = "test_truth.csv";
 
 prediction::ModelPtr predictionModel;
 prediction::ResultPtr predictionResult;
@@ -62,7 +66,10 @@ int main()
 void trainModel()
 {
     /* Read training data set from a .csv file and create a tensor to store input data */
+    std::cout << "Reading training data from " << trainDatasetFile << std::endl;
     TensorPtr trainingData = readTensorFromCSV(trainDatasetFile);
+
+    std::cout << "Reading training data truth from " << trainGroundTruthFile << std::endl;
     TensorPtr trainingGroundTruth = readTensorFromCSV(trainGroundTruthFile, true);
 
     SharedPtr<optimization_solver::sgd::Batch<> > sgdAlgorithm(new optimization_solver::sgd::Batch<>());
@@ -92,11 +99,14 @@ void trainModel()
     /* Retrieve training and prediction models of the neural network */
     training::ModelPtr trainingModel = net.getResult()->get(training::model);
     predictionModel = trainingModel->getPredictionModel<float>();
+
+    std::cout << "Training Complete\n" << std::endl;
 }
 
 void testModel()
 {
     /* Read testing data set from a .csv file and create a tensor to store input data */
+    std::cout << "Reading test data from " << testDatasetFile << std::endl;
     TensorPtr predictionData = readTensorFromCSV(testDatasetFile);
 
     /* Create an algorithm to compute the neural network predictions */
@@ -113,11 +123,14 @@ void testModel()
 
     /* Print results of the neural network prediction */
     predictionResult = net.getResult();
+
+    std::cout << "Testing Complete\n" << std::endl;
 }
 
 void printResults()
 {
     /* Read testing ground truth from a .csv file and create a tensor to store the data */
+    std::cout << "Reading test data truth from " << testGroundTruthFile << std::endl;
     TensorPtr predictionGroundTruth = readTensorFromCSV(testGroundTruthFile);
 
     printTensors<int, float>(predictionGroundTruth, predictionResult->get(prediction::prediction),
