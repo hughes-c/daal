@@ -26,7 +26,8 @@
 #define _DAAL_COMMONS_H
 
 #include "service.h"
-#include "blob_dataset.h"
+// #include "blob_dataset.h"
+#include "bin_dataset.h"
 
 const size_t batchSize          = 1;
 const size_t trainingIterations = 1;
@@ -71,13 +72,16 @@ prediction::ModelPtr trainClassifier(training::TopologyPtr topology, BlobDataset
             batchCounter++;
 
             /* Set the input data batch to the neural network */
+            std::cout << "Getting input " << batchCounter << "\n";
             net.input.set(training::data, reader->getBatch());
 
             /* Set the input ground truth (labels) batch to the neural network */
+            std::cout << "Getting labels " << batchCounter << "\n";
             setGroundTruthForMultipleOutputs(net.input, lastLayerIndices, reader->getGroundTruthBatch());
 
             /* Compute the neural network forward and backward passes and update */
             /* weights and biases according to the optimization solver */
+            std::cout << "Computing " << batchCounter << "\n";
             net.compute();
 
             std::cout << batchCounter << " train batches processed" << std::endl;

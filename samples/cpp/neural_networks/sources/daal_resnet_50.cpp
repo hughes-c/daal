@@ -28,8 +28,10 @@
 const std::string defaultDatasetsPath = "./data";
 const std::string datasetFileNames[] =
 {
-    "train_224x224.blob",
-    "test_224x224.blob"
+    "cifar/data_batch_1.bin",
+    "cifar/test_batch.bin"
+//     "train_227x227.blob",
+//     "test_227x227.blob"
 };
 
 int main(int argc, char *argv[])
@@ -42,12 +44,16 @@ int main(int argc, char *argv[])
     std::string trainBlobPath = datasetsPath + "/" + datasetFileNames[0];
     std::string testBlobPath  = datasetsPath + "/" + datasetFileNames[1];
 
+    std::cout << "Training File: " << trainBlobPath << "\n";
+    std::cout << "Testing File: " << testBlobPath << "\n";
+
     /* Create blob dataset reader for the training dataset (ImageBlobDatasetReader defined in blob_dataset.h)  */
     ImageBlobDatasetReader<float> trainDatasetReader(trainBlobPath, batchSize);
     training::TopologyPtr topology = configureNet(); /* defined in daal_resnet_50.h */
 
     /* Train model (trainClassifier is defined in daal_common.h) */
     prediction::ModelPtr predictionModel = trainClassifier(topology, &trainDatasetReader);
+    std::cout << "\n\n\n";
 
     /* Create blob dataset reader for the testing dataset */
     ImageBlobDatasetReader<float> testDatasetReader(testBlobPath, batchSize);

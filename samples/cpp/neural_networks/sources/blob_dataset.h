@@ -170,6 +170,13 @@ Collection<size_t> ImageBlobDatasetReader<DataType>::getBatchDimensions()
     dims.push_back(_imageChannels);
     dims.push_back(_imageHeight);
     dims.push_back(_imageWidth);
+
+    for(auto boo = 0; boo != dims.size(); boo++)
+    {
+        std::cout << dims[boo] << "\n";
+    }
+    std::cout << std::endl;
+
     return dims;
 }
 
@@ -203,6 +210,11 @@ void ImageBlobDatasetReader<DataType>::open(const std::string &datasetPath)
 
     _imagesPosition = _dataFile.tellg();
     _classesPosition = (size_t)_imagesPosition + imagesDataSize;
+
+    std::cout << "_imagesPos " << _imagesPosition << "\n";
+    std::cout << "_classesPosition " << _classesPosition << " " << _imagesNumber << " " << _imageChannels << " " << _imageWidth << " " << _imageHeight << "\n";
+    std::cout << std::endl;
+
 }
 
 template<typename DataType>
@@ -222,8 +234,14 @@ TensorPtr ImageBlobDatasetReader<DataType>::readBatchFromDataset(std::fstream &f
     size_t batchPosition = (size_t)_imagesPosition + imagesBatchSize * counter;
     file.seekg(batchPosition);
 
+    std::cout << "BPosition " << _imagesPosition << "  Counter " << counter << "\n";
+    std::cout << "BBatchSize " << imagesBatchSize << " - " << _imagesInBatch << " " << _imageChannels << " " << _imageWidth << " " << _imageHeight << " " << sizeof(char) << " \n";
+    std::cout << "BbatchPosition " << batchPosition << "\n";
+
     TensorPtr dataBatch = allocateTensor<DataType>(_imagesInBatch, _imageChannels, _imageHeight, _imageWidth);
     const size_t trainTensorSize = dataBatch->getSize();
+
+    std::cout << "BtrainTesnorSize " << trainTensorSize << "\n";
 
     SubtensorDescriptor<DataType> batchBlock;
     dataBatch->getSubtensor(0, 0, 0, _imagesInBatch, writeOnly, batchBlock);
@@ -237,6 +255,11 @@ TensorPtr ImageBlobDatasetReader<DataType>::readBatchFromDataset(std::fstream &f
         objectsPtr[i] = (DataType)objectData[i];
     }
 
+    std::cout << std::endl;
+
+    printPredictedClasses(dataBatch, dataBatch, batchBlock.getSize());
+    std::cout << "---------------------------------------------\n";
+
     delete[] objectData;
     dataBatch->releaseSubtensor(batchBlock);
     return dataBatch;
@@ -249,6 +272,10 @@ TensorPtr ImageBlobDatasetReader<DataType>::readGroundTruthFromDataset(std::fstr
     size_t batchPosition = (size_t)_classesPosition + batchLabelsSize * counter;
     file.seekg(batchPosition);
 
+    std::cout << "GbatchLabelsSize " << batchLabelsSize << " - " << _imagesInBatch << " " << sizeof(uint32_t) << "\n";
+    std::cout << "GbatchPosition " << batchPosition << " - " << (size_t)_classesPosition << " " << batchLabelsSize << " " << counter << "\n";
+    std::cout << std::endl;
+
     TensorPtr groundTruthBatch = allocateTensor<int>(_imagesInBatch, 1);
 
     SubtensorDescriptor<int> groundTruthBlock;
@@ -258,7 +285,11 @@ TensorPtr ImageBlobDatasetReader<DataType>::readGroundTruthFromDataset(std::fstr
     for (size_t i = 0; i < _imagesInBatch; i++)
     {
         groundTruthPtr[i] = (int)readDWORD(file);
+        std::cout << "\t" << groundTruthPtr[i] << "\n";
     }
+
+    printPredictedClasses(groundTruthBatch, groundTruthBatch, groundTruthBlock.getSize());
+    std::cout << "---------------------------------------------\n";
 
     groundTruthBatch->releaseSubtensor(groundTruthBlock);
     return groundTruthBatch;
