@@ -22,8 +22,8 @@
 !    Auxiliary functions used in C++ neural networks samples
 !******************************************************************************/
 
-#ifndef _BLOB_DATASET_H
-#define _BLOB_DATASET_H
+#ifndef _BIN_DATASET_H
+#define _BIN_DATASET_H
 
 #include "daal_defines.h"
 
@@ -61,6 +61,7 @@ private:
    std::fstream _dataFile;
    std::streampos _imagesPosition;
    std::streampos _classesPosition;
+   std::streampos _next_classesPosition;
 
 public:
     ImageBlobDatasetReader(const std::string &pathToImages, size_t batchSize=32);
@@ -99,6 +100,7 @@ private:
 
     void checkBeforeReadBatch();
     static uint32_t readDWORD(std::fstream &input);
+    static uint8_t  readBYTE(std::fstream &input);
 };
 
 
@@ -171,12 +173,14 @@ Collection<size_t> ImageBlobDatasetReader<DataType>::getBatchDimensions()
     dims.push_back(_imageHeight);
     dims.push_back(_imageWidth);
 
+#if defined DEBUG
     std::cout << "Batch Dimensions\n";
     for(auto boo = 0; boo != dims.size(); boo++)
     {
         std::cout << "\t" << dims[boo] << "\n";
     }
     std::cout << std::endl;
+#endif
 
     return dims;
 }
@@ -203,16 +207,20 @@ void ImageBlobDatasetReader<DataType>::open(const std::string &datasetPath)
 
     std::cout << "Reading config at " << _dataFile.tellg() << "\n";
 
-    _imagesNumber  = readDWORD(_dataFile);
-    _imageChannels = readDWORD(_dataFile);
-    _imageWidth    = readDWORD(_dataFile);
-    _imageHeight   = readDWORD(_dataFile);
+    //CIFAR-10
+    _imagesNumber  = 55;//10000;
+    _imageChannels = 3;
+    _imageWidth    = 32;
+    _imageHeight   = 32;
 
     size_t imagesDataSize = _imagesNumber * _imageChannels *
                             _imageWidth   * _imageHeight;
 
-    _imagesPosition = _dataFile.tellg();
-    _classesPosition = (size_t)_imagesPosition + imagesDataSize;
+    //images are at second byte
+    _imagesPosition = 1;
+
+    //lables are first byte
+    _classesPosition = 0;
 
 #if defined DEBUG
     std::cout << "_imagesPos " << _imagesPosition << "\n";
@@ -236,7 +244,9 @@ TensorPtr ImageBlobDatasetReader<DataType>::readBatchFromDataset(std::fstream &f
 {
     size_t imagesBatchSize = _imagesInBatch * _imageChannels *
                              _imageWidth    * _imageHeight * sizeof(char);
-    size_t batchPosition = (size_t)_imagesPosition + imagesBatchSize * counter;
+    size_t batchLabelsSize = _imagesInBatch * sizeof(uint8_t);
+
+    size_t batchPosition = (size_t)_imagesPosition + (batchLabelsSize * counter) + (imagesBatchSize * counter);
     file.seekg(batchPosition);
 
 #if defined DEBUG
@@ -281,13 +291,18 @@ TensorPtr ImageBlobDatasetReader<DataType>::readBatchFromDataset(std::fstream &f
 template<typename DataType>
 TensorPtr ImageBlobDatasetReader<DataType>::readGroundTruthFromDataset(std::fstream &file, size_t counter)
 {
-    size_t batchLabelsSize = _imagesInBatch * sizeof(uint32_t);
-    size_t batchPosition = (size_t)_classesPosition + batchLabelsSize * counter;
+    size_t imagesBatchSize = _imagesInBatch * _imageChannels *
+                            _imageWidth    * _imageHeight * sizeof(char);
+    size_t batchLabelsSize = _imagesInBatch * sizeof(uint8_t);
+
+    size_t batchPosition = (size_t)_classesPosition + (imagesBatchSize * counter) + (batchLabelsSize * counter);
     file.seekg(batchPosition);
 
+#if defined DEBUG
     std::cout << "GSpos " << file.tellg() << "\n";
     std::cout << "GbatchLabelsSize " << batchLabelsSize << " - " << _imagesInBatch << " " << sizeof(uint8_t) << "\n";
-    std::cout << "GbatchPosition " << batchPosition << " - " << (size_t)_classesPosition << " " << batchLabelsSize << " " << counter << "\n";
+    std::cout << "GbatchPosition " << batchPosition << " - " << (size_t)_classesPosition << " " << imagesBatchSize << " " << batchLabelsSize << " " << counter << "\n";
+#endif
 
     TensorPtr groundTruthBatch = allocateTensor<int>(_imagesInBatch, 1);
 
@@ -297,9 +312,9 @@ TensorPtr ImageBlobDatasetReader<DataType>::readGroundTruthFromDataset(std::fstr
 
     for (size_t i = 0; i < _imagesInBatch; i++)
     {
-        groundTruthPtr[i] = (int)readDWORD(file);
+        groundTruthPtr[i] = (int)readBYTE(file);
         #if defined DEBUG
-        std::cout << "\t" << groundTruthPtr[i] << "\n";
+            std::cout << "\t" << groundTruthPtr[i] << "\n";
         #endif
     }
 
@@ -330,6 +345,14 @@ uint32_t ImageBlobDatasetReader<DataType>::readDWORD(std::fstream &input)
     uint32_t dword;
     input.read((char*)(&dword), sizeof(uint32_t));
     return dword;
+}
+
+template<typename DataType>
+uint8_t ImageBlobDatasetReader<DataType>::readBYTE(std::fstream &input)
+{
+    uint8_t hword;
+    input.read((char*)(&hword), sizeof(uint8_t));
+    return hword;
 }
 
 #endif
