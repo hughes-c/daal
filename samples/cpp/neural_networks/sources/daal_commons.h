@@ -27,7 +27,7 @@
 
 #include "service.h"
 // #include "blob_dataset.h"
-#include "bin_dataset.h"
+#include "cifar_dataset.h"
 
 const size_t batchSize          = 1;
 const size_t trainingIterations = 1;
@@ -48,7 +48,7 @@ void setGroundTruthForMultipleOutputs(training::Input &trainNetInput,
 /* Trains neural network with given dataset reader */
 prediction::ModelPtr trainClassifier(training::TopologyPtr topology, BlobDatasetReader *reader)
 {
-    std::cout << "Training started with batch size = [" << batchSize << "]" << std::endl;
+    std::cout << "Training started with batch size = [" << batchSize << "] and ";
 
     /* Get collection of last layer indices from topology */
     Collection<size_t> lastLayerIndices = getLastLayersIndices(*topology);
@@ -56,6 +56,8 @@ prediction::ModelPtr trainClassifier(training::TopologyPtr topology, BlobDataset
     /* Create the neural network training algorithm and set batch size and optimization solver */
     training::Batch<> net(getDefaultOptimizationSolver());
     net.parameter.optimizationSolver->getParameter()->nIterations = trainingIterations / reader->getTotalNumberOfObjects();
+    std::cout << net.parameter.optimizationSolver->getParameter()->nIterations << " iterations (" << trainingIterations << ", " << reader->getTotalNumberOfObjects() << ")";
+    std::cout << std::endl;
 
     /* Initialize neural network with given topology */
     net.initialize(reader->getBatchDimensions(), *topology);
@@ -72,16 +74,22 @@ prediction::ModelPtr trainClassifier(training::TopologyPtr topology, BlobDataset
             batchCounter++;
 
             /* Set the input data batch to the neural network */
+            #if defined DEBUG
             std::cout << "Getting input " << batchCounter << "\n";
+            #endif
             net.input.set(training::data, reader->getBatch());
 
             /* Set the input ground truth (labels) batch to the neural network */
+            #if defined DEBUG
             std::cout << "Getting labels " << batchCounter << "\n";
+            #endif
             setGroundTruthForMultipleOutputs(net.input, lastLayerIndices, reader->getGroundTruthBatch());
 
             /* Compute the neural network forward and backward passes and update */
             /* weights and biases according to the optimization solver */
+            #if defined DEBUG
             std::cout << "Computing " << batchCounter << "\n";
+            #endif
             net.compute();
 
             std::cout << batchCounter << " train batches processed" << std::endl;
