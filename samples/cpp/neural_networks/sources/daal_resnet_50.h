@@ -210,7 +210,7 @@ training::TopologyPtr configureNet()
     SharedPtr<convolution2d::Batch<float> > res3a_branch1(new convolution2d::Batch<float>());
     res3a_branch1->parameter.nKernels           = 512;
     res3a_branch1->parameter.kernelSizes        = convolution2d::KernelSizes(1, 1);
-    res3a_branch1->parameter.strides            = convolution2d::Strides(2, 2);
+    res3a_branch1->parameter.strides            = convolution2d::Strides(1, 1);
     res3a_branch1->parameter.weightsInitializer = XavierInitializerPtr(new XavierInitializer());
     res3a_branch1->parameter.biasesInitializer  = UniformInitializerPtr(new UniformInitializer(0, 0));
     const size_t res3a_branch1_id               = topology->add(res3a_branch1);
@@ -221,7 +221,7 @@ training::TopologyPtr configureNet()
     SharedPtr<convolution2d::Batch<float> > res3a_branch2a(new convolution2d::Batch<float>());
     res3a_branch2a->parameter.nKernels           = 128;
     res3a_branch2a->parameter.kernelSizes        = convolution2d::KernelSizes(1, 1);
-    res3a_branch2a->parameter.strides            = convolution2d::Strides(2, 2);
+    res3a_branch2a->parameter.strides            = convolution2d::Strides(1, 1);
     res3a_branch2a->parameter.weightsInitializer = XavierInitializerPtr(new XavierInitializer());
     res3a_branch2a->parameter.biasesInitializer  = UniformInitializerPtr(new UniformInitializer(0, 0));
     const size_t res3a_branch2a_id               = topology->add(res3a_branch2a);
@@ -417,7 +417,7 @@ training::TopologyPtr configureNet()
     SharedPtr<convolution2d::Batch<float> > res4a_branch1(new convolution2d::Batch<float>());
     res4a_branch1->parameter.nKernels           = 1024;
     res4a_branch1->parameter.kernelSizes        = convolution2d::KernelSizes(1, 1);
-    res4a_branch1->parameter.strides            = convolution2d::Strides(2, 2);
+    res4a_branch1->parameter.strides            = convolution2d::Strides(1, 1);
     res4a_branch1->parameter.weightsInitializer = XavierInitializerPtr(new XavierInitializer());
     res4a_branch1->parameter.biasesInitializer  = UniformInitializerPtr(new UniformInitializer(0, 0));
     const size_t res4a_branch1_id               = topology->add(res4a_branch1);
@@ -428,7 +428,7 @@ training::TopologyPtr configureNet()
     SharedPtr<convolution2d::Batch<float> > res4a_branch2a(new convolution2d::Batch<float>());
     res4a_branch2a->parameter.nKernels           = 256;
     res4a_branch2a->parameter.kernelSizes        = convolution2d::KernelSizes(1, 1);
-    res4a_branch2a->parameter.strides            = convolution2d::Strides(2, 2);
+    res4a_branch2a->parameter.strides            = convolution2d::Strides(1, 1);
     res4a_branch2a->parameter.weightsInitializer = XavierInitializerPtr(new XavierInitializer());
     res4a_branch2a->parameter.biasesInitializer  = UniformInitializerPtr(new UniformInitializer(0, 0));
     const size_t res4a_branch2a_id               = topology->add(res4a_branch2a);
@@ -722,7 +722,7 @@ training::TopologyPtr configureNet()
     SharedPtr<convolution2d::Batch<float> > res5a_branch1(new convolution2d::Batch<float>());
     res5a_branch1->parameter.nKernels           = 2048;
     res5a_branch1->parameter.kernelSizes        = convolution2d::KernelSizes(1, 1);
-    res5a_branch1->parameter.strides            = convolution2d::Strides(2, 2);
+    res5a_branch1->parameter.strides            = convolution2d::Strides(1, 1);
     res5a_branch1->parameter.weightsInitializer = XavierInitializerPtr(new XavierInitializer());
     res5a_branch1->parameter.biasesInitializer  = UniformInitializerPtr(new UniformInitializer(0, 0));
     const size_t res5a_branch1_id               = topology->add(res5a_branch1);
@@ -733,7 +733,7 @@ training::TopologyPtr configureNet()
     SharedPtr<convolution2d::Batch<float> > res5a_branch2a(new convolution2d::Batch<float>());
     res5a_branch2a->parameter.nKernels           = 512;
     res5a_branch2a->parameter.kernelSizes        = convolution2d::KernelSizes(1, 1);
-    res5a_branch2a->parameter.strides            = convolution2d::Strides(2, 2);
+    res5a_branch2a->parameter.strides            = convolution2d::Strides(1, 1);
     res5a_branch2a->parameter.weightsInitializer = XavierInitializerPtr(new XavierInitializer());
     res5a_branch2a->parameter.biasesInitializer  = UniformInitializerPtr(new UniformInitializer(0, 0));
     const size_t res5a_branch2a_id               = topology->add(res5a_branch2a);
