@@ -85,7 +85,11 @@ else
     EXT_LIB += -L$(TBB_PATH) -ltbb -ltbbmalloc -lpthread
 endif
 
-COPTS := -Wall -w -ggdb
+ifeq ($(debug),on)
+   COPTS := -Wall -w -ggdb -DDEBUG
+else
+   COPTS := -Wall -w -ggdb
+endif
 LOPTS := -Wl,--start-group $(DAAL_LIB) $(EXT_LIB) -Wl,--end-group
 
 override proc = 4
