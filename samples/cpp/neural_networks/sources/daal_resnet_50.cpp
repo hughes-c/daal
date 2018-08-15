@@ -28,8 +28,10 @@
 const std::string defaultDatasetsPath = "./data";
 const std::string datasetFileNames[] =
 {
-    "cifar/data_batch_1.bin",
-    "cifar/test_batch.bin"
+    "imageNet-1.bin",
+    "imageNet-val.bin"
+//     "cifar/data_batch_1.bin",
+//     "cifar/test_batch.bin"
 //     "train_227x227.blob",
 //     "test_227x227.blob"
 };
