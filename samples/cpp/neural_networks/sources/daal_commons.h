@@ -27,7 +27,8 @@
 
 #include "service.h"
 // #include "blob_dataset.h"
-#include "cifar_dataset.h"
+// #include "cifar_dataset.h"
+#include "imagenet_dataset.h"
 
 const size_t batchSize          = 1;
 const size_t trainingIterations = 1;
@@ -105,6 +106,7 @@ prediction::ModelPtr trainClassifier(training::TopologyPtr topology, BlobDataset
 /* Tests model with given dataset reader and return top-5 error rate */
 float testClassifier(prediction::ModelPtr predictionModel, BlobDatasetReader *reader)
 {
+    std::cout << "Prediction started..." << std::endl;
     /* Create the neural network prediction algorithm */
     prediction::Batch<> net;
 

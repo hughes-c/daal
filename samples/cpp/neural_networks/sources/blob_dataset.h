@@ -257,6 +257,10 @@ TensorPtr ImageBlobDatasetReader<DataType>::readBatchFromDataset(std::fstream &f
     dataBatch->getSubtensor(0, 0, 0, _imagesInBatch, writeOnly, batchBlock);
     DataType *objectsPtr = batchBlock.getPtr();
 
+#if defined DEBUG
+    std::cout << "BbatchBlockSize " << batchBlock.getSize() << "\n";
+#endif
+
     unsigned char *objectData = new unsigned char[trainTensorSize];
     file.read((char*)objectData, sizeof(unsigned char) * trainTensorSize);
 
